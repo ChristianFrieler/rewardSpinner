@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Employee Reward Slot-Machine</title>
+  <meta name="description" content="Prototyp: Employee Reward Slot-Machine – viadee-inspired UI" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Inter optional; kannst du entfernen -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="./">Reward Machine</a>
+      <nav>
+        <a class="link" href="./collection.html" aria-label="Meine Sammlung öffnen">Meine Sammlung</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card slot-card" aria-labelledby="slot-title">
+      <h1 id="slot-title" class="h1">Employee Reward Slot-Machine</h1>
+
+      <div class="slot-frame" role="group" aria-label="Slot-Reels">
+        <div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div>
+        <div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div>
+        <div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div>
+      </div>
+
+      <div class="actions">
+        <button id="spinBtn" class="btn btn-primary" aria-label="Slot starten">Spin</button>
+        <button id="resetBtn" class="btn btn-secondary" aria-label="Zurücksetzen">Reset</button>
+      </div>
+
+      <p id="result" class="result" aria-live="polite"></p>
+
+      <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+      <canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+    </section>
+
+    <section class="card info-card">
+      <h2 class="h2">So funktioniert’s</h2>
+      <ul>
+        <li>3 Reels spinnen ~1 Sekunde.</li>
+        <li>3× identisches Symbol = Gewinn (außer „ZONK“).</li>
+        <li>Gewinne landen in <strong>Meine Sammlung</strong> (persistiert per <code>localStorage</code>).</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container muted">© <span id="year"></span> Slot-Prototype • viadee-inspired</div>
+  </footer>
+
+  <script src="./utils.js"></script>
+  <script src="./confetti.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

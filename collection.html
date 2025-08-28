@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Meine Sammlung</title>
+  <meta name="description" content="Gewonnene Symbole – Sammlung" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="./">Reward Machine</a>
+      <nav>
+        <a class="link" href="./">Zur Slot-Machine</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 class="h1">Meine Sammlung</h1>
+
+      <div class="toolbar">
+        <label class="sr-only" for="sortSelect">Sortierung</label>
+        <select id="sortSelect" class="select">
+          <option value="rarity">Nach Seltenheit</option>
+          <option value="count">Nach Anzahl</option>
+          <option value="name">Nach Name</option>
+        </select>
+        <button id="clearBtn" class="btn btn-secondary">Sammlung leeren</button>
+      </div>
+
+      <div id="collectionGrid" class="grid"></div>
+
+      <p id="emptyHint" class="muted" hidden>Noch keine Gewinne – spiel eine Runde!</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container muted">© <span id="year"></span> Slot-Prototype</div>
+  </footer>
+
+  <script src="./utils.js"></script>
+  <script src="./collection.js"></script>
+</body>
+</html>
