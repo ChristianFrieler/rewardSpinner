@@ -6,7 +6,6 @@
   <title>Employee Reward Slot-Machine</title>
   <meta name="description" content="Prototyp: Employee Reward Slot-Machine – viadee-inspired UI" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Inter optional; kannst du entfernen -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -24,15 +23,37 @@
     <section class="card slot-card" aria-labelledby="slot-title">
       <h1 id="slot-title" class="h1">Employee Reward Slot-Machine</h1>
 
-      <div class="slot-frame" role="group" aria-label="Slot-Reels">
-        <div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div>
-        <div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div>
-        <div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div>
-      </div>
+      <div class="slot-machine">
+        <!-- Zierleiste / Top-Cap -->
+        <div class="slot-top">
+          <div class="slot-lamp" aria-hidden="true"></div>
+        </div>
 
-      <div class="actions">
-        <button id="spinBtn" class="btn btn-primary" aria-label="Slot starten">Spin</button>
-        <button id="resetBtn" class="btn btn-secondary" aria-label="Zurücksetzen">Reset</button>
+        <div class="slot-body">
+          <!-- Rahmen mit weicher Optik -->
+          <div class="slot-frame" role="group" aria-label="Slot-Reels">
+            <div class="reel-window">
+              <div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div>
+            </div>
+            <div class="reel-window">
+              <div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div>
+            </div>
+            <div class="reel-window">
+              <div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div>
+            </div>
+            <div class="reel-sep" aria-hidden="true"></div>
+            <div class="reel-sep" aria-hidden="true"></div>
+          </div>
+
+          <!-- Bedienfeld -->
+          <div class="console">
+            <button id="spinBtn" class="btn btn-primary big" aria-label="Slot starten">Spin</button>
+            <button id="resetBtn" class="btn btn-secondary" aria-label="Zurücksetzen">Reset</button>
+          </div>
+        </div>
+
+        <!-- Hebel -->
+        <button id="lever" class="lever" aria-label="Hebel ziehen (Spin)"></button>
       </div>
 
       <p id="result" class="result" aria-live="polite"></p>
@@ -44,8 +65,8 @@
     <section class="card info-card">
       <h2 class="h2">So funktioniert’s</h2>
       <ul>
-        <li>3 Reels spinnen ~1 Sekunde.</li>
-        <li>3× identisches Symbol = Gewinn (außer „ZONK“).</li>
+        <li>3 Reels rotieren ~1 Sekunde (staggered).</li>
+        <li>3× identisch = Gewinn (außer „ZONK“).</li>
         <li>Gewinne landen in <strong>Meine Sammlung</strong> (persistiert per <code>localStorage</code>).</li>
       </ul>
     </section>
