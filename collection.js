@@ -1,4 +1,11 @@
-import { SYMBOLS, loadCollection, saveCollection, byRarityThenCount, byCountDesc, byName, symbolBadgeContent } from './utils.js';
+import {
+  SYMBOLS,
+  loadCollection,
+  saveCollection,
+  byRarityThenCount,
+  byCountDesc,
+  byName
+} from './utils.js';
 
 const grid = document.getElementById('collectionGrid');
 const sortSelect = document.getElementById('sortSelect');
@@ -18,13 +25,17 @@ function entryToDOM(key, count){
   const thumb = document.createElement('div');
   thumb.className = 'thumb';
 
-  const content = symbolBadgeContent(s);
-  if(content instanceof HTMLImageElement){
-    content.alt = 'viadee Logo';
-    content.style.width = '20px';
-    content.style.height = '20px';
-    content.style.objectFit = 'contain';
-    thumb.appendChild(content);
+  let content = s.label[0].toUpperCase();
+  if(s.key === 'CAT') content = '🐱';
+  if(s.key === 'ZONK') content = '✖';
+  if(s.key === 'VIADEE'){
+    const img = new Image();
+    img.src = './assets/viadee-logo.png';
+    img.alt = 'viadee Logo';
+    img.style.width = '20px';
+    img.style.height = '20px';
+    img.style.objectFit = 'contain';
+    thumb.appendChild(img);
   }else{
     thumb.textContent = content;
   }

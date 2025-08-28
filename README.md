@@ -1,27 +1,26 @@
 # Employee Reward Slot-Machine (Static GitHub Pages)
 
-Ein leichter, barrierearmer Slot-Machine-Prototyp (3 Reels) mit viadee-inspiriertem UI.
-- Kein Backend, State via `localStorage`
-- Gewinn: 3× identisch (außer ZONK), Toast + Mini-Konfetti
-- Sammlung mit Zähler, Sortierung (Seltenheit, Anzahl, Name)
+Weiche Slot-Optik mit Hebel, echte Reel-Animation (staggered), Legende & Rewards, Gewinnlogik und Sammlung via `localStorage`.
+
+## Struktur
+- `index.html` – Slot-Machine
+- `collection.html` – Meine Sammlung
+- `styles.css` – Design (viadee-inspiriert)
+- `app.js` – Logik & Animation (ES Module)
+- `collection.js` – Sammlung (ES Module)
+- `utils.js` – RNG, Storage, Rewards (ES Module)
+- `confetti.js` – Mini-Konfetti (global)
+- `.nojekyll` – deaktiviert Jekyll
+- `assets/viadee-logo.png` – optionales Logo
 
 ## Deploy
-1. Repo erstellen, Dateien kopieren.
-2. Optional: `assets/viadee-logo.png` (PNG) hinzufügen.
-3. **GitHub Pages** aktivieren: Settings → Pages → Deploy from branch → `main` → `/ (root)`.
-4. `.nojekyll` Datei sicherstellen (leer).
+1. Dateien in Repo kopieren.
+2. Optional `assets/viadee-logo.png` hinzufügen.
+3. GitHub Pages aktivieren: Settings → Pages → Deploy from branch → `main` → root.
+4. Fertig.
 
-## Entwickeln
-Einfach lokal öffnen. Kein Build nötig.
-
-## Symbole & Gewichte
-- Volker (24), Markus (24), Katze (24), ZONK (26), viadee (2).
-`utils.js` → `SYMBOLS` anpassen.
-
-## A11y
-- `aria-live` für Toast
-- Fokus-Outlines sichtbar
-- `prefers-reduced-motion` via OS (Animationen kurz & dezent)
-
-## License
-MIT
+## Anpassungen
+- Gewichte: `utils.js` → `SYMBOLS.weight`
+- Rewards: `utils.js` → `REWARDS`
+- Animation: `app.js` → `stepMs`/`base`
+- Farben: `styles.css` → `:root` Variablen

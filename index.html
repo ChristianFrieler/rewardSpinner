@@ -24,35 +24,25 @@
       <h1 id="slot-title" class="h1">Employee Reward Slot-Machine</h1>
 
       <div class="slot-machine">
-        <!-- Zierleiste / Top-Cap -->
         <div class="slot-top">
           <div class="slot-lamp" aria-hidden="true"></div>
         </div>
 
         <div class="slot-body">
-          <!-- Rahmen mit weicher Optik -->
           <div class="slot-frame" role="group" aria-label="Slot-Reels">
-            <div class="reel-window">
-              <div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div>
-            </div>
-            <div class="reel-window">
-              <div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div>
-            </div>
-            <div class="reel-window">
-              <div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div>
-            </div>
+            <div class="reel-window"><div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div></div>
+            <div class="reel-window"><div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div></div>
+            <div class="reel-window"><div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div></div>
             <div class="reel-sep" aria-hidden="true"></div>
             <div class="reel-sep" aria-hidden="true"></div>
           </div>
 
-          <!-- Bedienfeld -->
           <div class="console">
             <button id="spinBtn" class="btn btn-primary big" aria-label="Slot starten">Spin</button>
             <button id="resetBtn" class="btn btn-secondary" aria-label="Zurücksetzen">Reset</button>
           </div>
         </div>
 
-        <!-- Hebel -->
         <button id="lever" class="lever" aria-label="Hebel ziehen (Spin)"></button>
       </div>
 
@@ -62,6 +52,7 @@
       <canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
     </section>
 
+    <!-- Legende / Rewards -->
     <section class="card info-card">
       <h2 class="h2">So funktioniert’s</h2>
       <ul>
@@ -69,6 +60,44 @@
         <li>3× identisch = Gewinn (außer „ZONK“).</li>
         <li>Gewinne landen in <strong>Meine Sammlung</strong> (persistiert per <code>localStorage</code>).</li>
       </ul>
+
+      <h3 class="h3">Legende & Rewards</h3>
+      <div class="legend" aria-label="Symbol-Legende und zugehörige Rewards">
+        <div class="legend-item">
+          <div class="badge">
+            <div class="thumb">
+              <img src="./assets/viadee-logo.png" alt="viadee Logo" onerror="this.replaceWith(document.createTextNode('viadee'))" />
+            </div>
+            <span>viadee</span>
+          </div>
+          <div class="legend-eq">3×</div>
+          <div class="legend-reward">= <strong>1 Urlaubstag</strong></div>
+        </div>
+
+        <div class="legend-item">
+          <div class="badge"><div class="thumb">V</div><span>Volker</span></div>
+          <div class="legend-eq">3×</div>
+          <div class="legend-reward">= <strong>50 € Gutschein</strong> (z. B. Buchhandlung)</div>
+        </div>
+
+        <div class="legend-item">
+          <div class="badge"><div class="thumb">M</div><span>Markus</span></div>
+          <div class="legend-eq">3×</div>
+          <div class="legend-reward">= <strong>Home-Office-Upgrade</strong> (100 € Budget)</div>
+        </div>
+
+        <div class="legend-item">
+          <div class="badge"><div class="thumb">🐱</div><span>Katze</span></div>
+          <div class="legend-eq">3×</div>
+          <div class="legend-reward">= <strong>Kaffee-Flat</strong> für 1 Woche</div>
+        </div>
+
+        <div class="legend-item zonk">
+          <div class="badge"><div class="thumb">✖</div><span>ZONK</span></div>
+          <div class="legend-eq">3×</div>
+          <div class="legend-reward">= <strong>kein Gewinn</strong></div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -76,8 +105,9 @@
     <div class="container muted">© <span id="year"></span> Slot-Prototype • viadee-inspired</div>
   </footer>
 
-  <script src="./utils.js"></script>
+  <!-- Confetti (kein Modul) -->
   <script src="./confetti.js"></script>
-  <script src="./app.js"></script>
+  <!-- App (ES Module, importiert utils.js) -->
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
