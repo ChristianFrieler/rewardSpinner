@@ -1,6 +1,5 @@
 import {
   SYMBOLS,
-  SYMBOL_DISPLAY_LOOP,
   spinReels,
   isWin,
   addToCollection,
@@ -8,24 +7,107 @@ import {
   getReward
 } from './utils.js';
 
-const $ = sel => document.querySelector(sel);
+/**
+ * Reel-Scroll-Animation:
+ * - Jedes Reel besitzt eine "strip" Liste aus .cell-Elementen (DISPLAY_ORDER).
+ * - Beim Spin wird die strip per CSS-Transition nach oben gescrollt.
+ * - Wir berechnen eine absolute Ziel-Indexposition, sodass die sichtbare Zelle
+ *   am Ende dem gewünschten Symbol entspricht. Anschließend snappen wir zurück
+ *   auf die modulare Position, um die Transform-Matrix klein zu halten.
+ */
 
-const reelEls = [$('#reel-1'), $('#reel-2'), $('#reel-3')];
+const DISPLAY_ORDER = ['VOLKER','MARKUS','CAT','ZONK','VIADEE']; // sichtbare Reihenfolge
+const REEL_IDS = [1,2,3];
+
+const $ = (s)=>document.querySelector(s);
 const spinBtn  = $('#spinBtn');
 const resetBtn = $('#resetBtn');
+const leverBtn = $('#lever');
+const marquee  = $('#marquee');
 const resultEl = $('#result');
 const toastEl  = $('#toast');
 const confettiCanvas = $('#confetti');
-const leverBtn = $('#lever');
-
-let spinning = false;
 document.getElementById('year').textContent = new Date().getFullYear();
 
-function setReelsContent(symbols){
-  symbols.forEach((s, i)=>{
-    reelEls[i].textContent = symbolDisplay(s);
-    reelEls[i].setAttribute('aria-label', `${s.label}`);
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const baseDuration = prefersReduced ? 450 : 900;  // ms
+const easing = 'cubic-bezier(.18,.9,.22,1)';
+
+let spinning = false;
+const reels = []; // { winEl, stripEl, cellH, baseLen, currentIndex }
+
+function getSymbolByKey(key){ return SYMBOLS.find(s=>s.key===key); }
+function setAria(winEl, sym){ winEl.setAttribute('aria-label', sym ? sym.label : '—'); }
+
+function buildStrip(stripEl){
+  stripEl.innerHTML = '';
+  for(const key of DISPLAY_ORDER){
+    const sym = getSymbolByKey(key);
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    if(key === 'ZONK') cell.classList.add('bad');
+    if(key === 'VIADEE') cell.classList.add('logo');
+    cell.dataset.key = key;
+    cell.textContent = symbolDisplay(sym);
+    stripEl.appendChild(cell);
+  }
+  // Dupliziere für weicheres Scrollen (genug Länge)
+  for(let i=0;i<20;i++){
+    for(const key of DISPLAY_ORDER){
+      const sym = getSymbolByKey(key);
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      if(key === 'ZONK') cell.classList.add('bad');
+      if(key === 'VIADEE') cell.classList.add('logo');
+      cell.dataset.key = key;
+      cell.textContent = symbolDisplay(sym);
+      stripEl.appendChild(cell);
+    }
+  }
+}
+
+function snapToIndex(strip, index){
+  const cellH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-h'));
+  strip.style.transition = 'none';
+  strip.style.transform = `translateY(${-index * cellH}px)`;
+  // force reflow
+  void strip.offsetWidth;
+}
+
+function animateToIndex(strip, fromIndex, toAbsIndex, duration){
+  const cellH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-h'));
+  strip.style.transition = `transform ${duration}ms ${easing}`;
+  strip.style.transform = `translateY(${-toAbsIndex * cellH}px)`;
+  return new Promise(resolve=>{
+    const onEnd = (e)=>{
+      if(e.propertyName !== 'transform') return;
+      strip.removeEventListener('transitionend', onEnd);
+      resolve();
+    };
+    strip.addEventListener('transitionend', onEnd);
   });
+}
+
+function setup(){
+  for(const id of REEL_IDS){
+    const winEl = document.getElementById(`reel-${id}`);
+    const stripEl = document.getElementById(`reel-${id}-strip`);
+    buildStrip(stripEl);
+    // Anfangsposition: Index 0
+    snapToIndex(stripEl, 0);
+    setAria(winEl, null);
+    reels.push({ winEl, stripEl, baseLen: DISPLAY_ORDER.length, currentIndex: 0 });
+  }
+}
+setup();
+
+function setUIBusy(b){
+  spinning = b;
+  spinBtn.disabled = b;
+  leverBtn.disabled = b;
+  spinBtn.setAttribute('aria-disabled', String(b));
+  leverBtn.setAttribute('aria-disabled', String(b));
+  leverBtn.classList.toggle('active', b);
 }
 
 function showToast(msg){
@@ -34,51 +116,10 @@ function showToast(msg){
   setTimeout(()=> toastEl.classList.remove('show'), 1800);
 }
 
-function playWinEffects(){
-  reelEls.forEach(el=>{
-    el.classList.remove('win-pulse'); void el.offsetWidth; el.classList.add('win-pulse');
-  });
-  if(window.launchConfetti){ window.launchConfetti(confettiCanvas, 600); }
-}
-
-/**
- * Visuelle Rotation eines Reels: wir iterieren schnell über SYMBOL_DISPLAY_LOOP,
- * um den Effekt von "drehen" zu simulieren. Nach `durationMs` stoppen wir
- * auf dem finalen Symbol.
- */
-function animateSingleReel(reelEl, durationMs, finalSymbol, startOffset=0){
-  const loop = SYMBOL_DISPLAY_LOOP;
-  let idx = startOffset % loop.length;
-  const stepMs = 60;                 // Umschaltgeschwindigkeit
-  const start = performance.now();
-
-  let timeoutId;
-
-  function tick(now){
-    const elapsed = now - start;
-    reelEl.textContent = loop[idx].text;
-    idx = (idx + 1) % loop.length;
-    reelEl.style.transform = `translateY(${Math.sin(now/120)*2}px)`;
-
-    if(elapsed < durationMs){
-      timeoutId = setTimeout(()=>requestAnimationFrame(tick), stepMs);
-    }else{
-      reelEl.style.transform = 'translateY(0)';
-      reelEl.textContent = symbolDisplay(finalSymbol);
-      reelEl.setAttribute('aria-label', finalSymbol.label);
-    }
-  }
-  requestAnimationFrame(tick);
-  return ()=>{ try{ clearTimeout(timeoutId); }catch(_){ } };
-}
-
-function setUIBusy(busy){
-  spinning = busy;
-  spinBtn.disabled = busy;
-  leverBtn.disabled = busy;
-  spinBtn.setAttribute('aria-disabled', String(busy));
-  leverBtn.setAttribute('aria-disabled', String(busy));
-  if(busy){ leverBtn.classList.add('active'); } else { leverBtn.classList.remove('active'); }
+function playWinFX(){
+  marquee.classList.add('lit');
+  if(window.launchConfetti){ window.launchConfetti(confettiCanvas, 700); }
+  setTimeout(()=> marquee.classList.remove('lit'), 900);
 }
 
 async function doSpin(){
@@ -86,32 +127,38 @@ async function doSpin(){
   setUIBusy(true);
   resultEl.textContent = '';
 
-  // Spin-Ergebnisse ziehen
-  const symbols = spinReels();
+  const results = spinReels(); // 3 Symbole (weighted)
+  const durations = [baseDuration, baseDuration+150, baseDuration+300];
 
-  // Dauer je Reel (staggered)
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const base = prefersReduced ? 600 : 900;
-  const durations = [base, base+150, base+300];
+  // Für jedes Reel das Ziel berechnen
+  const promises = reels.map(async (r, idx)=>{
+    const targetKey = results[idx].key;
+    const targetIndexInCycle = DISPLAY_ORDER.indexOf(targetKey);
+    // Zufällige Anzahl kompletter Zyklen für "Gewicht"
+    const cycles = prefersReduced ? 4 : (8 + Math.floor(Math.random()*5)); // 8..12
+    const toAbsIndex = r.currentIndex + cycles * r.baseLen + targetIndexInCycle;
 
-  // Start-Offsets, damit Reels nicht synchron laufen
-  const offsets = [Math.floor(Math.random()*5), Math.floor(Math.random()*5), Math.floor(Math.random()*5)];
+    // Start bei aktueller Position
+    snapToIndex(r.stripEl, r.currentIndex);
+    await new Promise(requestAnimationFrame); // next frame
+    await animateToIndex(r.stripEl, r.currentIndex, toAbsIndex, durations[idx]);
 
-  // Animationen starten
-  const cancels = [
-    animateSingleReel(reelEls[0], durations[0], symbols[0], offsets[0]),
-    animateSingleReel(reelEls[1], durations[1], symbols[1], offsets[1]),
-    animateSingleReel(reelEls[2], durations[2], symbols[2], offsets[2]),
-  ];
+    // Snap zurück auf modulare Zielposition
+    const finalIndex = toAbsIndex % r.baseLen;
+    snapToIndex(r.stripEl, finalIndex);
+    r.currentIndex = finalIndex;
 
-  // „Ende“ abwarten
-  await new Promise(r=>setTimeout(r, Math.max(...durations)+60));
+    // A11y Label aktualisieren
+    setAria(r.winEl, getSymbolByKey(targetKey));
+  });
+
+  await Promise.all(promises);
 
   // Gewinnlogik
-  if(isWin(symbols)){
-    const won = symbols[0];
+  if(isWin(results)){
+    const won = results[0];
     const reward = getReward(won.key);
-    playWinEffects();
+    playWinFX();
     addToCollection(won.key);
     showToast(`${won.label} hinzugefügt ✅ ${reward ? '• ' + reward : ''}`);
     resultEl.textContent = `Gewinn! ${won.label} gesammelt${reward ? ' – Reward: ' + reward : ''}.`;
@@ -126,6 +173,19 @@ spinBtn.addEventListener('click', doSpin);
 leverBtn.addEventListener('click', doSpin);
 
 resetBtn.addEventListener('click', ()=>{
-  setReelsContent([{label:'—',key:'-'},{label:'—',key:'-'},{label:'—',key:'-'}]);
+  reels.forEach(r=>{
+    r.currentIndex = 0;
+    snapToIndex(r.stripEl, 0);
+    setAria(r.winEl, null);
+  });
   resultEl.textContent = '';
+});
+
+// Responsiveness: bei Resize cell-height neu anwenden (Snap hält Bild stabil)
+let resizeTO;
+window.addEventListener('resize', ()=>{
+  clearTimeout(resizeTO);
+  resizeTO = setTimeout(()=>{
+    reels.forEach(r=> snapToIndex(r.stripEl, r.currentIndex));
+  }, 120);
 });

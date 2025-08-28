@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Employee Reward Slot-Machine</title>
-  <meta name="description" content="Prototyp: Employee Reward Slot-Machine – neon marquee edition" />
+  <meta name="description" content="Prototyp: Employee Reward Slot-Machine – modern neon marquee" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
@@ -21,54 +21,49 @@
 
   <main class="container">
     <section class="slot-wrap" aria-labelledby="slot-title">
-      <!-- Deko-Chips (rein visuell) -->
-      <div class="chip chip-a" aria-hidden="true"></div>
-      <div class="chip chip-b" aria-hidden="true"></div>
-      <div class="chip chip-c" aria-hidden="true"></div>
-      <div class="chip chip-d" aria-hidden="true"></div>
 
       <!-- MACHINE -->
       <div class="machine glow">
-        <!-- MARQUEE mit Glühbirnen -->
-        <div class="marquee" role="img" aria-label="WINNER Marquee">
+        <!-- Marquee -->
+        <div class="marquee" id="marquee" role="img" aria-label="WINNER Marquee">
           <span>WINNER</span>
-          <i class="bulbs" aria-hidden="true"></i>
+          <div class="bulb-row" aria-hidden="true">
+            <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+            <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          </div>
         </div>
 
-        <!-- Kopfleiste mit Glühlampe -->
+        <!-- glossy crest -->
         <div class="crest"><i class="crest-lamp" aria-hidden="true"></i></div>
 
-        <!-- Gehäuse -->
+        <!-- Body -->
         <div class="body">
-          <!-- Rahmen + Reels -->
+          <!-- Reels -->
           <div class="frame" role="group" aria-label="Slot-Reels">
-            <div class="reel-window">
-              <div class="reel" id="reel-1" role="img" aria-label="Reel 1">—</div>
+            <div class="reel-window" id="reel-1" role="img" aria-label="—">
+              <div class="reel-strip" id="reel-1-strip"></div>
+              <div class="reel-gloss" aria-hidden="true"></div>
             </div>
-            <div class="reel-window">
-              <div class="reel" id="reel-2" role="img" aria-label="Reel 2">—</div>
+            <div class="reel-window" id="reel-2" role="img" aria-label="—">
+              <div class="reel-strip" id="reel-2-strip"></div>
+              <div class="reel-gloss" aria-hidden="true"></div>
             </div>
-            <div class="reel-window">
-              <div class="reel" id="reel-3" role="img" aria-label="Reel 3">—</div>
+            <div class="reel-window" id="reel-3" role="img" aria-label="—">
+              <div class="reel-strip" id="reel-3-strip"></div>
+              <div class="reel-gloss" aria-hidden="true"></div>
             </div>
             <div class="divider" aria-hidden="true"></div>
             <div class="divider" aria-hidden="true"></div>
           </div>
 
-          <!-- Bedienfeld -->
+          <!-- Controls -->
           <div class="console">
             <button id="spinBtn" class="btn btn-primary big" aria-label="Slot starten">Spin</button>
             <button id="resetBtn" class="btn btn-secondary" aria-label="Zurücksetzen">Reset</button>
           </div>
-
-          <!-- Coin-Tray (Deko) -->
-          <div class="tray" aria-hidden="true">
-            <span class="coin"></span><span class="coin"></span><span class="coin"></span>
-            <span class="coin"></span><span class="coin"></span>
-          </div>
         </div>
 
-        <!-- Hebel -->
+        <!-- Lever -->
         <button id="lever" class="lever" aria-label="Hebel ziehen (Spin)"></button>
       </div>
 
@@ -83,7 +78,7 @@
     <section class="card info-card glass">
       <h2 class="h2">So funktioniert’s</h2>
       <ul>
-        <li>3 Reels rotieren ~1 Sekunde (staggered).</li>
+        <li>Reels scrollen weich (staggered).</li>
         <li>3× identisch = Gewinn (außer „ZONK“).</li>
         <li>Gewinne landen in <strong>Meine Sammlung</strong> (persistiert per <code>localStorage</code>).</li>
       </ul>
@@ -134,7 +129,7 @@
 
   <!-- Confetti (kein Modul) -->
   <script src="./confetti.js"></script>
-  <!-- App (ES Module, importiert utils.js) -->
+  <!-- App (ES Module) -->
   <script type="module" src="./app.js"></script>
 </body>
 </html>
